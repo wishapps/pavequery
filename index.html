@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>PaveQuery</title>
+    <link rel="icon" href="icon.png" />
+    <!-- include mapbox libraries -->
+	<script src="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js"></script>
+	<link href="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css" rel="stylesheet" />
+
+    <!--Button classes-->
+    <style>
+        .redtoggle {
+            display:grid;
+            background-color: rgba(155,155,155,1);
+            font-size:14px; 
+            margin:2px; 
+            padding:5px;
+            border-radius:5px;
+            text-align:center;
+            width:100px;
+        }
+
+        .redtoggle:hover {
+            background-color: rgba(155,155,155,0.5); /* rgba(255,0,0,0.1) */
+        }
+
+        input:checked + .redtoggle {
+            background-color: rgba(255,0,0,1);  /* #C22C19 2196f3*/
+            color: white; 
+        }
+
+        input:checked + .redtoggle:hover {
+            background-color: rgba(255,0,0,0.5);  /* DB331D 2196f3*/
+            color: white; 
+        }
+
+
+    </style>
+
+
+    <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+        input:checked + .slider.round {
+            background-color:#1fb5db ; 
+        }
+    </style>
+
+    <style>
+         .mapboxgl-ctrl-logo {
+            display: none;
+        }
+        .mapbox-logo{
+            display: none;
+        }
+        .mapboxgl-logo{
+            display: none;
+        }
+        .leaflet-bottom, .leaflet-top {
+            z-index: 0 !important;  
+            position: absolute;
+            pointer-events: none;
+        }
+    </style>
+    
+
+</head>
+
+<body style="width: 330px">
+    <div style="font-family: 'Arial Black'; font-size: large">DDOT Pavement Condition Query</div>
+	<!--Places map that covers 100% of background-->
+    <div id='map' style='position: fixed; z-index: -1; top: 0px; left: 0px; width: 100%; height: 100%; margin: 0 auto;'></div>
+    </div>
+	<div id="leftPanel" style="position: absolute; width:350px; top:40px; left:0px; transition-timing-function:ease-out; transition: all .75s; background-color:#ffffff;">
+        <input id="expandArrow" type="image" src="expand.png" width="26" height="37" onclick="expand();" style="position:absolute; left:355px; top: 0px; outline:0px; transition:all .75s; transform:rotate(0deg);" />
+		<div id="PaveFilters" style="padding: 5px; margin-bottom: 5px; display:block;">
+			<div style="font-weight:bold;">Functional Class</div>
+            <div style="padding-left: 5px">
+                <label class="switch"><input style="display:none" type="checkbox" id="ftFC1" onchange="applyStyle();applyFilter();" checked=checked/><span class="redtoggle">Freeway</span></label>
+                <label class="switch"><input style="display:none" type="checkbox" id="ftFC2" onchange="applyStyle();applyFilter();" checked=checked /><span class="redtoggle">Other Expressway</span></label>
+                <label class="switch"><input style="display:none" type="checkbox" id="ftFC3" onchange="applyStyle();applyFilter();" checked=checked /><span class="redtoggle">Principal Arterial</span></label>
+				<label class="switch"><input style="display:none" type="checkbox" id="ftFC4" onchange="applyStyle();applyFilter();" checked=checked /><span class="redtoggle">Minor Arterial</span></label>
+				<label class="switch"><input style="display:none" type="checkbox" id="ftFC5" onchange="applyStyle();applyFilter();" checked=checked /><span class="redtoggle">Collector</span></label>
+				<label class="switch"><input style="display:none" type="checkbox" id="ftFC6" onchange="applyStyle();applyFilter();" checked=checked /><span class="redtoggle">Local</span></label>
+            </div>
+		<div>
+	</div>
+	<script type="text/javascript" src="Map.js"></script>
+</body>
+</html>
+
