@@ -321,7 +321,7 @@ function exportCSV() {
 	var features = map.queryRenderedFeatures({ layers: ['segments'] });	
 	var fileContent = "OID,SegmentName,FromStreet,ToStreet,Functional, PCI";
 	for (var i=0; i<features.length; i++) {
-		fileContent=fileContent +  '\r\n' + features[i].properties.OID + "," + features[i].properties.NM.replace(",", " ") + "," + features[i].properties.FM.replace(",", " ") + "," + features[i].properties.TO.replace(",", " ") + "," + features[i].properties.FN + "," + features[i].properties.PCI
+		fileContent=fileContent +  '\r\n' + features[i].properties.OID + "," + features[i].properties.NM.replaceAll(",", " ") + "," + features[i].properties.FM.replaceAll(",", " ") + "," + features[i].properties.TO.replaceAll(",", " ") + "," + features[i].properties.FN + "," + features[i].properties.PCI
 	}
 	var bb = new Blob([fileContent ], { type: 'text/plain' });
 	var a = document.createElement('a');
