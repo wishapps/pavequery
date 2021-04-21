@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>PaveQuery</title>
+    <!-- include mapbox libraries -->
+	<script src="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js"></script>
+	<link href="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css" rel="stylesheet" />
+
+    <!--Button classes-->
+    <style>
+        .redtoggle {
+            display:grid;
+            background-color: rgba(155,155,155,1);
+            font-size:13px; 
+            margin:2px; 
+            padding:5px;
+            border-radius:5px;
+            text-align:center;
+            width:110px;
+        }
+
+        .redtoggle:hover {
+            background-color: rgba(155,155,155,0.5); /* rgba(255,0,0,0.1) */
+        }
+
+        input:checked + .redtoggle {
+            background-color: rgba(255,0,0,1);  /* #C22C19 2196f3*/
+            color: white; 
+        }
+
+        input:checked + .redtoggle:hover {
+            background-color: rgba(255,0,0,0.5);  /* DB331D 2196f3*/
+            color: white; 
+        }
+
+
+    </style>
+
+
+    <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" >
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+        input:checked + .slider.round {
+            background-color:#1fb5db ; 
+        }
+    </style>
+
+    <style>
+         .mapboxgl-ctrl-logo {
+            display: none;
+        }
+        .mapbox-logo{
+            display: none;
+        }
+        .mapboxgl-logo{
+            display: none;
+        }
+        .leaflet-bottom, .leaflet-top {
+            z-index: 0 !important;  
+            position: absolute;
+            pointer-events: none;
+        }
+		.ftDst {
+			width: 35px;
+		}
+		.rmDis {
+			color: rgba(255,0,0,1);
+			font-size: x-large;
+		}
+    </style>
+    
+
+</head>
+
+<body >
+    <div style="font-family: 'Arial Black'; font-size: large">Pavement Information Query</div>
+	<!--Places map that covers 100% of background-->
+    <div id='map' style='position: fixed; z-index: -1; top: 0px; left: 0px; width: 100%; height: 100%; margin: 0 auto;'></div>    
+	<input id="expandArrow" type="image" src="expand.png" width="26" height="37" onclick="expand();" style="position:absolute; left:415px; top: 40px; outline:0px; transition:all .75s; transform:rotate(0deg);" />
+	<div id="leftPanel" style="position: absolute; width:410px; top:40px; left:0px; transition-timing-function:ease-out; transition: all .75s; background-color:#ffffff; overflow-y: auto; max-height: 900px;">
+        	<div id="PaveFilters" style="padding: 5px; margin-bottom: 5px; display:block;">
+			<div style="font-weight:bold; display: inline-block;">Functional Class:</div>&nbsp;&nbsp;&nbsp;&nbsp;
+			<div style="display: inline-block;" class="checkbox"><label><input type="checkbox" id="ftNHS" onchange="applyStyle();applyFilter();"/>NHS</label></div>&nbsp;&nbsp;&nbsp;&nbsp;
+			<button type="button" class="btn btn-info btn-sm" onclick="exportCSV();">Export list from current view</button>
+            <div style="border: thin solid #C0C0C0; padding: 5px">                
+                <label class="switch"><input style="display:none" type="checkbox" id="ftFC1" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Interstate</span></label>
+                <label class="switch"><input style="display:none" type="checkbox" id="ftFC2" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Other Expressway</span></label>
+                <label class="switch"><input style="display:none" type="checkbox" id="ftFC3" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Principal Arterial</span></label>
+				<label class="switch"><input style="display:none" type="checkbox" id="ftFC4" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Minor Arterial</span></label>
+				<label class="switch"><input style="display:none" type="checkbox" id="ftFC5" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Collector</span></label>
+				<label class="switch"><input style="display:none" type="checkbox" id="ftFC6" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Local</span></label>
+            </div>
+            <br/>
+            <div style="font-weight:bold;">PCI:</div>
+            <div style="border: thin solid #C0C0C0; padding: 5px">                
+                PCI from <input type="text" class="form-control" id="ftPCI1" maxlength="3" style="width: 60px; display: inline-block;" value="0" onchange="applyFilter();"/> to 
+                <input type="text" class="form-control" id="ftPCI2" maxlength="3" style="width: 60px; display: inline-block;" value="100" onchange="applyFilter();"/>
+            </div>
+            <br/>
+            <div>
+                <div style="font-weight:bold; display: inline-block;">Pavement Work Completed:</div>&nbsp;&nbsp;&nbsp;
+                <div style="display: inline-block;" class="checkbox"><label><input id="chkNoCP" type="checkbox" value="" onclick="changeNoCP();applyFilter();"/>No Pavement Work</label></div>
+            </div>
+            <div style="border: thin solid #C0C0C0; padding: 5px" >                
+                <div title="Please choose pavement work completed years">
+                    Year from <input type="text" class="form-control" id="frYR" maxlength="4" style="width: 60px; display: inline-block;" value="2005" onchange="applyFilter();"/> to 
+                    <input type="text" class="form-control" id="toYR" maxlength="4" style="width: 60px; display: inline-block;" value="2020" onchange="applyFilter();"/>
+                </div>                                 
+                <div id="divFtCP" title="Please click to choose completed pavement work types">       
+                    <div>Pavement work type:</div>
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftCP1" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Federal Aid Resurfacing</span></label>
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftCP2" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Resurface/ Restoration</span></label>
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftCP3" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Reconstruction</span></label>
+				    <label class="switch"><input style="display:none" type="checkbox" id="ftCP4" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Crack Seal</span></label>
+				    <label class="switch"><input style="display:none" type="checkbox" id="ftCP5" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Microsurfacing</span></label>
+				    <label class="switch"><input style="display:none" type="checkbox" id="ftCP6" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Slurry Seal</span></label>
+                </div>
+            </div>
+            <br/>
+            <div>
+                <div style="display: inline-block; font-weight:bold;">Pavement Work Planned:</div>&nbsp;&nbsp;&nbsp;&nbsp;
+                <div style="display: inline-block;" class="checkbox"><label><input id="chkNoPP" type="checkbox" value="" onclick="changeNoPP();applyFilter();"/>No Pavement Work Planned</label></div> 
+            </div>
+            <div style="border: thin solid #C0C0C0; padding: 5px">                                
+                <div style="display: none;" title="Please choose pavement work planned years">
+                    Year from <input type="text" class="form-control" 
+                        id="Text1" maxlength="4" style="width: 60px; display: inline-block;" 
+                        value="2021" onchange="applyFilter();" readonly="readonly"/> to 
+                    <input type="text" class="form-control" id="Text2" maxlength="4" 
+                        style="width: 60px; display: inline-block;" value="2026" 
+                        onchange="applyFilter();" readonly="readonly"/>
+                </div>                                 
+
+                <div id="divFtPP" title="Please click to choose planned pavement work types">       
+                    <div>Pavement work type:</div>
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftPP1" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Federal Aid Resurfacing</span></label>
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftPP2" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Resurface/ Restoration</span></label>
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftPP3" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Reconstruction</span></label>
+				    <label class="switch"><input style="display:none" type="checkbox" id="ftPP4" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Crack Seal</span></label>
+				    <label class="switch"><input style="display:none" type="checkbox" id="ftPP5" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Microsurfacing</span></label>
+				    <label class="switch"><input style="display:none" type="checkbox" id="ftPP6" onchange="applyStyle();applyFilter();"/><span class="redtoggle">Slurry Seal</span></label>
+                </div>
+            </div>
+			<br/>
+            <div>
+                <div style="font-weight:bold; display: inline-block;">Pavement Type:</div>                          
+            </div>
+            <div style="border: thin solid #C0C0C0; padding: 5px" >                
+                <div title="Please choose pavement type">
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftMT1" checked=true onchange="applyStyle();applyFilter();"/><span class="redtoggle" style="width:80px">AC</span></label>
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftMT2" checked=true onchange="applyStyle();applyFilter();"/><span class="redtoggle" style="width:80px">APC</span></label>
+                    <label class="switch"><input style="display:none" type="checkbox" id="ftMT3" checked=true onchange="applyStyle();applyFilter();"/><span class="redtoggle" style="width:80px">PCC</span></label>
+				    <label class="switch"><input style="display:none" type="checkbox" id="ftMT4" checked=true onchange="applyStyle();applyFilter();"/><span class="redtoggle" style="width:80px">X</span></label>
+                </div>                                 
+			</div>
+			<br/>
+            <div>
+                <div style="display: inline-block; font-weight:bold;">Distress:</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <div style="display: inline-block;" title="Please click to add more filters for distress" onclick="addFTDis();"><i style="font-size: large;" class="fa fa-plus"></i>&nbsp;Add filter for distress</div> 
+            </div>
+            <div id="divDistress" class="table-responsive" style="border: thin solid #C0C0C0; padding: 5px">                                
+				<table class="table  table-condensed table-hover table-striped">
+					<thead>
+						<tr>
+							<th>Distress Type</th>
+							<th>Severity</th>
+							<th>Density</th>
+							<th></th>							
+						</tr>
+					</thead>
+					<tbody id="tbDistress">
+
+					<tbody>
+				</table>
+				<br/><br/><br/>
+            </div>
+			
+			
+		</div>
+	</div>
+	<script type="text/javascript">
+	    $(document.body).on('click', '.dropdown-menu li', function (event) {
+            var $target = $(event.currentTarget);            
+            $target.closest('.btn-group')
+                .find('[data-bind="label"]').text($target.text())
+                .end()
+                .children('.dropdown-toggle').dropdown('toggle');
+			applyFilter();	
+                //if ($target.closest('.btn-group')[0].id.substring(7, 9) == "XY") {
+                //    loadChartQuickFacts1();
+                //}
+            
+            return false;
+        });
+	</script>
+	<script type="text/javascript" src="Map.js"></script>
+
+</body>
+</html>
+
