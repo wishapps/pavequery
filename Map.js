@@ -159,9 +159,9 @@ function applyFilter() {
                 upLYear = parseInt(document.getElementById("toLYR").value)
             }
         }
-		var filterLY = [">=", ["get", "LY"], lowLYear];
+		var filterLY = [">=", ["get", "YR"], lowLYear];
         newFilter.push(filterLY);
-		var filterLY = ["<=", ["get", "LY"], upLYear];
+		var filterLY = ["<=", ["get", "YR"], upLYear];
         newFilter.push(filterLY);
 	}
 
