@@ -151,7 +151,7 @@ function applyFilter() {
         var upLYear = 2020;
         if (isNaN(document.getElementById("frLYR").value) == false) {
             if (parseInt(document.getElementById("frLYR").value) > 2005 && parseInt(document.getElementById("frLYR").value) < 2020) {
-                lowLYear=parseInt(document.getElementById("frYLR").value)
+                lowLYear=parseInt(document.getElementById("frLYR").value)
             }
         }
         if (isNaN(document.getElementById("toLYR").value) == false) {
